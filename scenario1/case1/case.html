@@ -1,0 +1,54 @@
+{# create a word bank drag and drop demo  #}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Case 1: Word Bank</title>
+</head>
+<body>
+    <header>
+        <h1>Case 1: Word Bank</h1>
+    </header>
+    <main>
+        <section aria-labelledby="instructions-heading">
+            <h2 id="instructions-heading">Instructions</h2>
+            <p>Drag the words from the word bank and drop them into the correct missind word spots inside the sentences in the exercise area.</p>
+        </section>
+        <section aria-labelledby="exercise">
+            <h2 id="exercise">Exercise</h2>
+            <p id="targets">
+                The United States is a country made up of 50 individual states. 
+                <span class="dropzone" 
+                      tabindex="0" 
+                      role="region" 
+                      aria-labelledby="largest">
+                    ______
+                </span>
+
+                is the <span id="largest">biggest state in size</span>, and 
+                <span class="dropzone" 
+                      tabindex="0" 
+                      role="region" 
+                      aria-labelledby="dz-2-label"
+                      data-expects="Rhode Island">
+                    <span id="dz-2-label" class="sr-only">Drop zone for smallest state by size</span>
+                    ______
+                </span> 
+                is the smallest.
+            </p>
+        </section>
+        <section id="word-bank">
+            <h2>Word Bank</h2>
+            <ul>
+                <li><button type="button" draggable="true" aria-grabbed="false">California</button></li>
+                <li><button type="button" draggable="true" aria-grabbed="false">Alaska</button></li>
+                <li><button type="button" draggable="true" aria-grabbed="false">Wyoming</button></li>
+                <li><button type="button" draggable="true" aria-grabbed="false">Rhode Island</button></li>
+                <li><button type="button" draggable="true" aria-grabbed="false">Texas</button></li>
+                <li><button type="button" draggable="true" aria-grabbed="false">Florida</button></li>
+            </ul>
+        </section>
+    </main>
+</body>
+</html>
