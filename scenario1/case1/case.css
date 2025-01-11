@@ -1,0 +1,16 @@
+.dropzone {
+    display: inline-block;
+    width: 100px;
+    height: 30px;
+    border: 2px solid #000;
+    margin: 0 5px;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 30px;
+}
+
+.dropzone:focus {
+    border: 2px solid #ff0000;
+    outline: 2px solid #ff0000;
+    outline-offset: 2px;
+}
