@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Case 1: Word Bank</title>
+    <title>Case 1: Word Bank With Tab Movement</title>
     <link rel="stylesheet" href="case.css">
 </head>
 <body>
@@ -22,31 +22,38 @@
                 <span class="dropzone" 
                       tabindex="0" 
                       role="region" 
-                      aria-labelledby="largest">
-        
-                </span>
-                is the <span id="largest">biggest state in size</span>, and 
+                      aria-labelledby="dz-1-label"></span> is the <span id="dz-1-label">biggest state in size</span>, and 
                 <span class="dropzone" 
                       tabindex="0" 
                       role="region" 
-                      aria-labelledby="dz-2-label"
-                      data-expects="Rhode Island">              
-                
-                </span> 
-                is the smallest. California is the most populated and Wyoming is the least.
+                      aria-labelledby="dz-2-label"></span> is <span id="dz-2-label">the smallest</span>. 
+                <div>
+                    <span class="dropzone" 
+                          tabindex="0" 
+                          role="region" 
+                          aria-labelledby="dz-3-label"></span> is <span id="dz-3-label">the most populated state</span> while 
+                    <span class="dropzone" 
+                          tabindex="0" 
+                          role="region" 
+                          aria-labelledby="dz-4-label"></span> is <span id="dz-4-label">the least populated</span>.
+                </div>
             </p>
         </section>
         <section id="word-bank">
             <h2>Word Bank</h2>
-            <ul>
-                <li><button type="button" draggable="true" aria-grabbed="false">California</button></li>
-                <li><button type="button" draggable="true" aria-grabbed="false">Alaska</button></li>
-                <li><button type="button" draggable="true" aria-grabbed="false">Wyoming</button></li>
-                <li><button type="button" draggable="true" aria-grabbed="false">Rhode Island</button></li>
-                <li><button type="button" draggable="true" aria-grabbed="false">Texas</button></li>
-                <li><button type="button" draggable="true" aria-grabbed="false">Florida</button></li>
+            <ul role="list">
+                <li><span class="draggable" tabindex="0" draggable="true" aria-selected="false">California</span></li>
+                <li><span class="draggable" tabindex="0" draggable="true" aria-selected="false">Alaska</span></li>
+                <li><span class="draggable" tabindex="0" draggable="true" aria-selected="false">Wyoming</span></li>
+                <li><span class="draggable" tabindex="0" draggable="true" aria-selected="false">Rhode Island</span></li>
+                <li><span class="draggable" tabindex="0" draggable="true" aria-selected="false">Texas</span></li>
+                <li><span class="draggable" tabindex="0" draggable="true" aria-selected="false">Florida</span></li>
+                <li><span class="draggable" tabindex="0" draggable="true" aria-selected="false">New York</span></li>
+                <li><span class="draggable" tabindex="0" draggable="true" aria-selected="false">Illinois</span></li>
+                <li><span class="draggable" tabindex="0" draggable="true" aria-selected="false">Georgia</span></li>
             </ul>
         </section>
     </main>
+    <script src="case.js"></script>
 </body>
 </html>

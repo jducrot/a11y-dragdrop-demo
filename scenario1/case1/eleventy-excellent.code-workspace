@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "../../../eleventy-excellent"
+		},
+		{
+			"name": "a11y-dragdrop-demo",
+			"path": "../.."
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "a11y-dragdrop-demo"
+	}
+}

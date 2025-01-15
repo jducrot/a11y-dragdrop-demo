@@ -1,16 +1,117 @@
+:root {
+    --dragHeight: 30px;
+}
+
+body {
+    font-family: sans-serif;
+}
+
 .dropzone {
     display: inline-block;
-    width: 100px;
-    height: 30px;
     border: 2px solid #000;
     margin: 0 5px;
     text-align: center;
     vertical-align: middle;
-    line-height: 30px;
+    line-height: var(--dragHeight);
+    background-color: #ffffff;
+    min-width: 100px;
+    min-height: var(--dragHeight);
+    width: max-content; /* Ensure dropzone is at least as wide as its content */
 }
 
 .dropzone:focus {
     border: 2px solid #ff0000;
-    outline: 2px solid #ff0000;
-    outline-offset: 2px;
+    outline: 3px solid #0066cc; /* Higher contrast focus indicator */
+    outline-offset: 3px;
+    box-shadow: 0 0 0 2px #ffffff; /* Focus indicator visible on any background */
+}
+
+.dropzone[aria-dropeffect="move"] {
+    background-color: #f8f8f8;
+    border: 2px dashed #666666;
+}
+
+.dropzone .draggable {
+    cursor: pointer;
+}
+
+.dropzone .draggable:hover {
+    background-color: #f0f0f0;
+    border-color: #0066cc;
+}
+
+.dropzone .draggable:focus {
+    outline: 3px solid #0066cc;
+    outline-offset: 3px;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+ul li {
+    display: inline;
+    margin-right: 8px;
+}
+
+.draggable {
+    border: 2px solid black;
+    min-height: var(--dragHeight);
+    min-width: var(--dragHeight);
+    padding: 0 5px;
+    border-radius: 5px;
+    background-color: lightgray; 
+    color: #000000;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+}
+
+.draggable:active {
+    cursor: grabbing;
+}
+
+.draggable:focus-visible {
+    outline: 3px solid #0066cc; /* Higher contrast focus indicator */
+    outline-offset: 3px;
+    box-shadow: 0 0 0 2px #ffffff;
+}
+
+.draggable:focus:not(:focus-visible) {
+    outline: none;
+}
+
+.draggable[aria-grabbed="true"] {
+    background-color: #ddeeff;
+    border: 2px solid #0066cc;
+}
+
+section {
+    margin-bottom: 40px;
+}
+
+.visually-hidden {
+    background-color: black;  
+    border: 0;
+    clip: rect(0, 0, 0, 0);
+    color: white;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;  
+    padding: 0;
+    position: absolute;  
+    width: 1px;
+    white-space: nowrap; 
+}
+
+/* Add reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .draggable,
+    .dropzone {
+        transition: none;
+    }
 }
