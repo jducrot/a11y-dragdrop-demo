@@ -1,5 +1,19 @@
 :root {
     --dragHeight: 30px;
+    --borderWidth: 2px;
+    --borderColor: black;
+    --focusOutlineColor: red;
+    --focusOutlineOffset: 3px;
+    --draggableBackgroundColor: lightgray;
+    --draggableBorderColor: black;
+    --draggableHoverBorderColor: #0066cc;
+    --draggableSelectedBackgroundColor: #ddeeff;
+    --draggableSelectedBorderColor: #0066cc;
+    --dropzoneBackgroundColor: var(--whiteColor);
+    --dropzoneDropeffectBackgroundColor: lightgray;
+    --dropzoneDropeffectBorderColor: darkgray;
+    --visuallyHiddenBackgroundColor: black;
+    --whiteColor: #ffffff;
 }
 
 body {
@@ -8,27 +22,26 @@ body {
 
 .dropzone {
     display: inline-block;
-    border: 2px solid #000;
+    border: var(--borderWidth) solid var(--borderColor);
     margin: 0 5px;
     text-align: center;
     vertical-align: middle;
     line-height: var(--dragHeight);
-    background-color: #ffffff;
+    background-color: var(--dropzoneBackgroundColor);
     min-width: 100px;
     min-height: var(--dragHeight);
-    width: max-content; /* Ensure dropzone is at least as wide as its content */
+    width: max-content;
 }
 
 .dropzone:focus {
-    border: 2px solid #ff0000;
-    outline: 3px solid #0066cc; /* Higher contrast focus indicator */
-    outline-offset: 3px;
-    box-shadow: 0 0 0 2px #ffffff; /* Focus indicator visible on any background */
+    outline: var(--borderWidth) solid var(--focusOutlineColor);
+    outline-offset: var(--focusOutlineOffset);
+    box-shadow: 0 0 0 var(--borderWidth) var(--whiteColor);
 }
 
 .dropzone[aria-dropeffect="move"] {
-    background-color: #f8f8f8;
-    border: 2px dashed #666666;
+    background-color: var(--dropzoneDropeffectBackgroundColor);
+    border: var(--borderWidth) dashed var(--dropzoneDropeffectBorderColor);
 }
 
 .dropzone .draggable {
@@ -36,13 +49,8 @@ body {
 }
 
 .dropzone .draggable:hover {
-    background-color: #f0f0f0;
-    border-color: #0066cc;
-}
-
-.dropzone .draggable:focus {
-    outline: 3px solid #0066cc;
-    outline-offset: 3px;
+    background-color: var(--whiteColor);
+    border-color: var(--draggableHoverBorderColor);
 }
 
 ul {
@@ -57,13 +65,13 @@ ul li {
 }
 
 .draggable {
-    border: 2px solid black;
+    border: var(--borderWidth) solid var(--draggableBorderColor);
     min-height: var(--dragHeight);
     min-width: var(--dragHeight);
     padding: 0 5px;
     border-radius: 5px;
-    background-color: lightgray; 
-    color: #000000;
+    background-color: var(--draggableBackgroundColor); 
+    color: var(--borderColor);
     text-align: center;
     display: inline-flex;
     align-items: center;
@@ -76,18 +84,22 @@ ul li {
 }
 
 .draggable:focus-visible {
-    outline: 3px solid #0066cc; /* Higher contrast focus indicator */
-    outline-offset: 3px;
-    box-shadow: 0 0 0 2px #ffffff;
+    outline: var(--borderWidth) solid var(--focusOutlineColor);
+    outline-offset: var(--focusOutlineOffset);
+    box-shadow: 0 0 0 var(--borderWidth) var(--whiteColor);
 }
 
 .draggable:focus:not(:focus-visible) {
     outline: none;
 }
 
-.draggable[aria-grabbed="true"] {
-    background-color: #ddeeff;
-    border: 2px solid #0066cc;
+.draggable[aria-selected="false"] {
+    border-radius: 5px;
+}
+.draggable[aria-selected="true"] {
+    background-color: var(--draggableSelectedBackgroundColor);
+    border: calc(var(--borderWidth) * 2) solid var(--draggableSelectedBorderColor);
+    border-radius: 0;
 }
 
 section {
@@ -95,10 +107,10 @@ section {
 }
 
 .visually-hidden {
-    background-color: black;  
+    background-color: var(--visuallyHiddenBackgroundColor);  
     border: 0;
     clip: rect(0, 0, 0, 0);
-    color: white;
+    color: var(--whiteColor);
     height: 1px;
     margin: -1px;
     overflow: hidden;  
@@ -114,4 +126,9 @@ section {
     .dropzone {
         transition: none;
     }
+}
+
+#targets {
+    text-wrap: balance;
+    line-height: 3;
 }

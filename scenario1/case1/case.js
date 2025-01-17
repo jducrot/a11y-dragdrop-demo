@@ -1,26 +1,36 @@
-// State management
-let selectedDraggable = null;
-let dragSource = null;
+const KEYS = {
+    ENTER: 'Enter',
+    SPACE: 'Space'
+};
 
-// Initialize components
-document.addEventListener('DOMContentLoaded', () => {
+const state = {
+    selectedDraggable: null,
+    dragSource: null,
+    messageQueue: [],
+    announceTimeout: null,
+    ANNOUNCEMENT_DELAY: 2000
+};
+
+document.addEventListener('DOMContentLoaded', initializeApp);
+
+function initializeApp() {
     setupLiveRegion();
     setupDraggables();
     setupDropzones();
-});
+}
 
 function setupLiveRegion() {
     const liveRegion = document.createElement('div');
-    liveRegion.id = 'a11y-announce';
+    Object.assign(liveRegion, {
+        id: 'a11y-announce',
+        className: 'visually-hidden'
+    });
     liveRegion.setAttribute('aria-live', 'polite');
-    liveRegion.setAttribute('aria-atomic', 'true');
-    liveRegion.classList.add('visually-hidden');
     document.body.appendChild(liveRegion);
 }
 
 function setupDraggables() {
-    const draggables = document.querySelectorAll('.draggable');
-    draggables.forEach(draggable => {
+    document.querySelectorAll('.draggable').forEach(draggable => {
         draggable.addEventListener('dragstart', handleDragStart);
         draggable.addEventListener('dragend', handleDragEnd);
         draggable.addEventListener('keydown', handleDraggableKeydown);
@@ -29,42 +39,86 @@ function setupDraggables() {
 }
 
 function setupDropzones() {
-    const dropzones = document.querySelectorAll('.dropzone');
-    dropzones.forEach(dropzone => {
-        dropzone.addEventListener('dragover', handleDragOver);
-        dropzone.addEventListener('drop', handleDrop);
-        dropzone.addEventListener('keydown', handleDropzoneKeydown);
-        // Add click/keyboard handling for items inside dropzones
-        dropzone.addEventListener('click', handleDropzoneItemClick);
+    function addEventListeners(element, events) {
+        Object.keys(events).forEach(event => {
+            element.addEventListener(event, events[event]);
+        });
+    }
+    document.querySelectorAll('.dropzone').forEach(dropzone => {
+        addEventListeners(dropzone, {
+            dragover: handleDragOver,
+            drop: handleDrop,
+            keydown: handleDropzoneKeydown,
+            click: handleDropzoneItemClick
+        });
     });
 }
 
-// Add this new function
+function cleanupEmptyListItems() {
+    const wordBank = document.querySelector('#word-bank ul');
+    if (!wordBank) return;
+    
+    wordBank.querySelectorAll('li').forEach(li => {
+        if (!li.hasChildNodes()) {
+            li.remove();
+        }
+    });
+}
+
+function moveItemToWordBank(item, dropzone) {
+    if (!item) return;
+    const wordBank = document.querySelector('#word-bank ul');
+    if (!wordBank) return;
+    const listItem = document.createElement('li');
+    listItem.appendChild(item);
+    wordBank.appendChild(listItem);
+    if (dropzone) {
+        updateDropzoneTabindex(dropzone);
+        cleanupEmptyListItems(); 
+    }
+    announceAction(`${item.textContent.trim()} moved back to word bank`);
+}
+
+function handleKeyAction(e, actionType) {
+    if (e.key !== KEYS.ENTER && e.key !== KEYS.SPACE) return;
+    e.preventDefault();
+    const inDropzone = e.target.closest('.dropzone');
+    if (actionType === 'draggable') {
+        if (inDropzone) {
+            moveItemToWordBank(e.target, inDropzone);
+        } else if (!state.selectedDraggable) {
+            selectDraggable(e.target);
+        } else if (state.selectedDraggable === e.target) {
+            deselectDraggable();
+        }
+    } else if (actionType === 'dropzone' && state.selectedDraggable) {
+        performDrop(e.target);
+    }
+}
+
+const handleDraggableKeydown = e => handleKeyAction(e, 'draggable');
+const handleDropzoneKeydown = e => handleKeyAction(e, 'dropzone');
+
 function handleDropzoneItemClick(e) {
     const item = e.target.closest('.draggable');
-    if (item) {
-        const wordBank = document.querySelector('#word-bank ul');
-        const listItem = document.createElement('li');
-        listItem.appendChild(item);
-        wordBank.appendChild(listItem);
-        announceAction('Item moved back to word bank');
+    const dropzone = item?.closest('.dropzone');
+    if (item && dropzone) {
+        moveItemToWordBank(item, dropzone);
     }
 }
 
 function handleDragStart(e) {
-    selectedDraggable = this;
-    dragSource = this.parentElement;
-    e.dataTransfer.setData('text/plain', '');
-    this.setAttribute('aria-selected', 'true');
-    announceAction('Item selected for dragging');
+    state.selectedDraggable = e.target;
+    state.dragSource = e.target.parentElement;
+    e.target.setAttribute('aria-selected', 'true');
+    announceAction(`${state.selectedDraggable.textContent.trim()} selected`);
 }
 
 function handleDragEnd() {
     this.setAttribute('aria-selected', 'false');
-    announceAction('Item drag ended');
-    if (selectedDraggable === this) {
-        selectedDraggable = null;
-        dragSource = null;
+    if (state.selectedDraggable === this) {
+        state.selectedDraggable = null;
+        state.dragSource = null;
     }
 }
 
@@ -74,68 +128,80 @@ function handleDragOver(e) {
 
 function handleDrop(e) {
     e.preventDefault();
-    if (selectedDraggable) {
+    if (state.selectedDraggable) {
         performDrop(this);
     }
 }
 
-function handleDraggableKeydown(e) {
-    if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        const inDropzone = this.closest('.dropzone');
-        
-        if (inDropzone) {
-            // If item is in a dropzone, move it back to word bank
-            const wordBank = document.querySelector('#word-bank ul');
-            const listItem = document.createElement('li');
-            listItem.appendChild(this);
-            wordBank.appendChild(listItem);
-            announceAction('Item moved back to word bank');
-        } else if (!selectedDraggable) {
-            selectDraggable(this);
-        } else if (selectedDraggable === this) {
-            deselectDraggable();
-        }
-    }
-}
-
-function handleDropzoneKeydown(e) {
-    if ((e.key === 'Enter' || e.key === ' ') && selectedDraggable) {
-        e.preventDefault();
-        performDrop(this);
-    }
-}
-
+/**
+ * Selects a draggable element, sets it as the currently selected draggable,
+ * updates its ARIA attribute to indicate selection, and announces the action.
+ *
+ * @param {HTMLElement} draggable - The draggable element to be selected.
+ */
 function selectDraggable(draggable) {
-    selectedDraggable = draggable;
-    dragSource = draggable.parentElement;
+    state.selectedDraggable = draggable;
+    state.dragSource = draggable.parentElement;
     draggable.setAttribute('aria-selected', 'true');
     const stateName = draggable.textContent.trim();
     announceAction(`${stateName} selected`);
 }
 
+
+/**
+ * Deselects the currently selected draggable element.
+ * 
+ * This function retrieves the name of the currently selected draggable element,
+ * triggers the drag end event for that element, and announces the action of dropping
+ * the element.
+ */
 function deselectDraggable() {
-    const stateName = selectedDraggable.textContent.trim();
-    handleDragEnd.call(selectedDraggable);
+    const stateName = state.selectedDraggable.textContent.trim();
+    handleDragEnd.call(state.selectedDraggable);
     announceAction(`${stateName} dropped`);
 }
 
+
+/**
+ * Handles the drop action by appending the selected draggable element to the specified dropzone.
+ * It also updates the ARIA attributes and resets the drag source and selected draggable elements.
+ *
+ * @param {HTMLElement} dropzone - The target dropzone element where the draggable will be dropped.
+ */
 function performDrop(dropzone) {
     if (dropzone.hasChildNodes()) {
-        dragSource.appendChild(dropzone.firstChild);
-        announceAction('Existing item moved back to work bank');
+        moveItemToWordBank(dropzone.firstChild, dropzone);
     }
-    dropzone.appendChild(selectedDraggable);
-    selectedDraggable.setAttribute('aria-selected', 'false');
-    announceAction('Item dropped successfully');
-    selectedDraggable = null;
-    dragSource = null;
+    const dragSourceLi = state.dragSource;
+    dropzone.appendChild(state.selectedDraggable);
+    state.selectedDraggable.setAttribute('aria-selected', 'false');
+    state.selectedDraggable.removeAttribute('tabindex'); 
+    if (dragSourceLi.tagName.toLowerCase() === 'li') {
+        dragSourceLi.remove(); // Remove empty li
+    }
+    state.selectedDraggable = null;
+    state.dragSource = null;
 }
 
 function announceAction(message) {
+    if (!message) return;
+    state.messageQueue.push(message);
+    if (state.messageQueue.length === 1) {
+        processMessageQueue();
+    }
+}
+
+function processMessageQueue() {
+    if (state.messageQueue.length === 0) return;
     const liveRegion = document.getElementById('a11y-announce');
-    liveRegion.textContent = message;
-    setTimeout(() => {
+    if (!liveRegion) return;
+    clearTimeout(state.announceTimeout);
+    liveRegion.textContent = state.messageQueue[0];
+    state.announceTimeout = setTimeout(() => {
+        state.messageQueue.shift();
         liveRegion.textContent = '';
-    }, 1000);
+        if (state.messageQueue.length > 0) {
+            processMessageQueue();
+        }
+    }, state.ANNOUNCEMENT_DELAY);
 }

@@ -13,7 +13,7 @@
     <main>
         <section aria-labelledby="instructions-heading">
             <h2 id="instructions-heading">Instructions</h2>
-            <p>Drag the words from the word bank and drop them into the correct missind word spots inside the sentences in the exercise area.</p>
+            <p>Drag the words from the word bank and drop them into the correct missing word spots inside the sentences in the exercise area.</p>
         </section>
         <section aria-labelledby="exercise">
             <h2 id="exercise">Exercise</h2>
@@ -22,21 +22,27 @@
                 <span class="dropzone" 
                       tabindex="0" 
                       role="region" 
-                      aria-labelledby="dz-1-label"></span> is the <span id="dz-1-label">biggest state in size</span>, and 
+                      aria-label="blank"
+                      id="dz-1"
+                      aria-labelledby="dz-1 dz-1-label"></span> is the <span id="dz-1-label">biggest state in size</span>, and 
                 <span class="dropzone" 
                       tabindex="0" 
                       role="region" 
-                      aria-labelledby="dz-2-label"></span> is <span id="dz-2-label">the smallest</span>. 
-                <div>
-                    <span class="dropzone" 
-                          tabindex="0" 
-                          role="region" 
-                          aria-labelledby="dz-3-label"></span> is <span id="dz-3-label">the most populated state</span> while 
-                    <span class="dropzone" 
-                          tabindex="0" 
-                          role="region" 
-                          aria-labelledby="dz-4-label"></span> is <span id="dz-4-label">the least populated</span>.
-                </div>
+                      aria-label="blank"
+                      id="dz-2"
+                      aria-labelledby="dz-2 dz-2-label"></span> is <span id="dz-2-label">the smallest</span>. 
+                <span class="dropzone" 
+                        tabindex="0" 
+                        role="region" 
+                        aria-label="blank"
+                        id="dz-3"
+                        aria-labelledby="dz-3 dz-3-label"></span> is <span id="dz-3-label">the most populated state</span> while 
+                <span class="dropzone" 
+                        tabindex="0" 
+                        role="region" 
+                        aria-label="blank"
+                        id="dz-4"
+                        aria-labelledby="dz-4 dz-4-label"></span> is <span id="dz-4-label">the least populated</span>.
             </p>
         </section>
         <section id="word-bank">
@@ -49,8 +55,6 @@
                 <li><span class="draggable" tabindex="0" draggable="true" aria-selected="false">Texas</span></li>
                 <li><span class="draggable" tabindex="0" draggable="true" aria-selected="false">Florida</span></li>
                 <li><span class="draggable" tabindex="0" draggable="true" aria-selected="false">New York</span></li>
-                <li><span class="draggable" tabindex="0" draggable="true" aria-selected="false">Illinois</span></li>
-                <li><span class="draggable" tabindex="0" draggable="true" aria-selected="false">Georgia</span></li>
             </ul>
         </section>
     </main>
