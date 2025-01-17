@@ -77,13 +77,9 @@ function moveItemToWordBank(item, dropzone) {
 }
 
 function handleKeyAction(e, actionType) {
-    console.log('>>>>> actionType:', actionType);
-    console.log('e.key:', e.key);
-    console.log('condition:', e.key !== KEYS.ENTER && e.key !== KEYS.SPACE);
     if (e.key !== KEYS.ENTER && e.key !== KEYS.SPACE) return;
     e.preventDefault();
     const inDropzone = e.target.closest('.dropzone')?.hasChildNodes() || false;
-    console.log('inDropzone:', inDropzone);
     if (actionType === 'draggable') {
         if (inDropzone) {
             moveItemToWordBank(e.target, inDropzone);
