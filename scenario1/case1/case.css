@@ -103,6 +103,7 @@ ul li {
 .draggable[aria-selected="false"] {
     border-radius: 5px;
 }
+
 .draggable[aria-selected="true"] {
     background-color: var(--draggableSelectedBackgroundColor);
     border: calc(var(--borderWidth) * 2) solid var(--draggableSelectedBorderColor);
