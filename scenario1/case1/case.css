@@ -15,6 +15,8 @@
     --dropzoneDropeffectBorderColor: darkgray;
     --visuallyHiddenBackgroundColor: black;
     --whiteColor: #ffffff;
+    --successColor: #2de858;
+    --errorColor: #ee717c;
 }
 
 body {
@@ -44,15 +46,6 @@ body {
 .dropzone[aria-dropeffect="move"] {
     background-color: var(--dropzoneDropeffectBackgroundColor);
     border: var(--borderWidth) dashed var(--dropzoneDropeffectBorderColor);
-}
-
-.dropzone .draggable {
-    cursor: pointer;
-}
-
-.dropzone .draggable:hover {
-    background-color: var(--whiteColor);
-    border-color: var(--draggableHoverBorderColor);
 }
 
 ul {
@@ -100,20 +93,9 @@ ul li {
     outline: none;
 }
 
-.draggable[aria-selected="false"] {
-    border-radius: 5px;
-}
-
-.draggable[aria-selected="true"] {
-    background-color: var(--draggableSelectedBackgroundColor);
-    border: calc(var(--borderWidth) * 2) solid var(--draggableSelectedBorderColor);
-    border-radius: 0;
-}
-
 .draggable.grabbed {
     background-color: var(--draggableSelectedBackgroundColor);
     border: calc(var(--borderWidth) * 2) solid var(--draggableSelectedBorderColor);
-    outline: var(--borderWidth) solid var(--focusOutlineColor);
     outline-offset: var(--focusOutlineOffset);
     box-shadow: 0 0 0 var(--borderWidth) var(--whiteColor);
 }
@@ -141,7 +123,14 @@ section {
     line-height: 3;
 }
 
-/* Add reduced motion support */
+.success {
+    background-color: var(--successColor);
+}
+
+.error {
+    background-color: var(--errorColor);
+}
+
 @media (prefers-reduced-motion: reduce) {
     .draggable,
     .dropzone {
