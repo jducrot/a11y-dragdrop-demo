@@ -3,6 +3,7 @@
     --borderWidth: 2px;
     --borderColor: black;
     --dragHeight: 30px;
+    --dropWidth: 100px;
     --focusOutlineColor: red;
     --focusOutlineOffset: 3px;
     --draggableBackgroundColor: lightgray;
@@ -10,11 +11,10 @@
     --draggableHoverBorderColor: #0066cc;
     --draggableSelectedBackgroundColor: #ddeeff;
     --draggableSelectedBorderColor: #0066cc;
-    --dropzoneBackgroundColor: var(--whiteColor);
+    --dropzoneBackgroundColor: #ffffff;
     --dropzoneDropeffectBackgroundColor: lightgray;
     --dropzoneDropeffectBorderColor: darkgray;
     --visuallyHiddenBackgroundColor: black;
-    --whiteColor: #ffffff;
     --successColor: #2de858;
     --errorColor: #ee717c;
 }
@@ -70,7 +70,7 @@ ul li {
     min-width: var(--dragHeight);
     padding: 0 5px;
     border-radius: 5px;
-    background-color: var(--draggableBackgroundColor); 
+    background-color: var(--draggableBackgroundColor);
     color: var(--borderColor);
     text-align: center;
     display: inline-flex;
@@ -96,8 +96,6 @@ ul li {
 .draggable.grabbed {
     background-color: var(--draggableSelectedBackgroundColor);
     border: calc(var(--borderWidth) * 2) solid var(--draggableSelectedBorderColor);
-    outline-offset: var(--focusOutlineOffset);
-    box-shadow: 0 0 0 var(--borderWidth) var(--whiteColor);
 }
 
 section {
@@ -105,17 +103,17 @@ section {
 }
 
 .visually-hidden {
-    background-color: var(--visuallyHiddenBackgroundColor);  
+    background-color: var(--visuallyHiddenBackgroundColor);
     border: 0;
     clip: rect(0, 0, 0, 0);
-    color: var(--whiteColor);
+    color: #ffffff;
     height: 1px;
     margin: -1px;
-    overflow: hidden;  
+    overflow: hidden;
     padding: 0;
-    position: absolute;  
+    position: absolute;
     width: 1px;
-    white-space: nowrap; 
+    white-space: nowrap;
 }
 
 #targets {

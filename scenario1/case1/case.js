@@ -1,6 +1,6 @@
 const KEYS = {
     ENTER: 'Enter',
-    SPACE: 'Space',
+    SPACE: ' ',
     ESC: 'Escape'
 };
 
@@ -11,38 +11,52 @@ document.addEventListener('DOMContentLoaded', () => {
 
     setUpLiveRegion();
 
-    document.querySelectorAll('.draggable').forEach(draggable => {
+    const draggables = document.querySelectorAll('.draggable');
+    const dropzones = document.querySelectorAll('.dropzone');
+
+    draggables.forEach(draggable => {
         draggable.addEventListener('keydown', handleDraggableKeydown);
         draggable.addEventListener('dragstart', handleDragStartEvent);
         draggable.addEventListener('dragend', handleDragEndEvent);
+        draggable.addEventListener('click', handleDragStartEvent);
     });
 
-    document.querySelectorAll('.dropzone').forEach(dropzone => {
+    dropzones.forEach(dropzone => {
         dropzone.addEventListener('keydown', handleDropzoneKeydown);
+        dropzone.addEventListener('click', handleDropzoneKeydown);
         dropzone.addEventListener('dragover', event => event.preventDefault());
         dropzone.addEventListener('drop', handleDropEvent);
     });
 
     function handleDraggableKeydown(event) {
         event.stopPropagation();
-        if (event.key === KEYS.ENTER || event.key === KEYS.SPACE) {
-            event.preventDefault();
-            if (selectedElement && (event.currentTarget !== selectedElement)) {
-                swapDraggables(selectedElement, event.currentTarget, announce);
-                selectedElement = null;
-            } else {
-                selectedElement = handleDragStart(selectedElement, event.currentTarget, announce);
-            }
-            checkDropzones(announce);
-        } else if (event.key === KEYS.ESC) {
-            event.preventDefault();
-            if (selectedElement) {
-                const itemName = getItemName(selectedElement);
-                selectedElement.setAttribute('aria-describedby', 'drag');
-                selectedElement.classList.remove('grabbed');
-                selectedElement = null;
-                announce(`${itemName} selection canceled`);
-            }
+        const { key, currentTarget } = event;
+        if (key === KEYS.ENTER || key === KEYS.SPACE) {
+            handleEnterOrSpaceKey(event, currentTarget);
+        } else if (key === KEYS.ESC) {
+            handleEscapeKey(event);
+        }
+    }
+
+    function handleEnterOrSpaceKey(event, currentTarget) {
+        event.preventDefault();
+        if (selectedElement && currentTarget !== selectedElement) {
+            swapDraggables(selectedElement, currentTarget, announce);
+            selectedElement = null;
+        } else {
+            selectedElement = handleDragStart(selectedElement, currentTarget, announce);
+        }
+        checkDropzones(announce);
+    }
+
+    function handleEscapeKey(event) {
+        event.preventDefault();
+        if (selectedElement) {
+            const itemName = getItemName(selectedElement);
+            selectedElement.setAttribute('aria-describedby', 'drag');
+            selectedElement.classList.remove('grabbed');
+            selectedElement = null;
+            announce(`${itemName} selection canceled`);
         }
     }
 
@@ -62,18 +76,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleDropzoneKeydown(event) {
-        if ((event.key === KEYS.ENTER || event.key === KEYS.SPACE) && selectedElement) {
+        if (selectedElement && (event.key === KEYS.ENTER || event.key === KEYS.SPACE || event.type === 'click')) {
             event.preventDefault();
-            const itemName = getItemName(selectedElement);
-            moveChildToWordBank(event.currentTarget);
-            event.currentTarget.appendChild(selectedElement);
-            selectedElement.setAttribute('aria-describedby', 'drag');
-            selectedElement.classList.remove('grabbed');
-            selectedElement = null;
-            removeEmptyListItems();
-            announce(`${itemName} dropped`);
-            checkDropzones(announce);
+            handleDrop(event.currentTarget);
         }
+    }
+
+    function handleDrop(target) {
+        const itemName = getItemName(selectedElement);
+        moveChildToWordBank(target);
+        target.appendChild(selectedElement);
+        finalizeDrop(itemName);
+    }
+
+    function finalizeDrop(itemName) {
+        selectedElement.setAttribute('aria-describedby', 'drag');
+        selectedElement.classList.remove('grabbed');
+        selectedElement = null;
+        removeEmptyListItems();
+        announce(`${itemName} dropped`);
+        checkDropzones(announce);
     }
 
     function handleDropEvent(event) {
@@ -164,8 +186,10 @@ function swapDraggables(draggable1, draggable2, announce) {
     const parent1 = draggable1.parentNode;
     const parent2 = draggable2.parentNode;
     if (parent1 && parent2) {
-        parent1.appendChild(draggable2);
-        parent2.appendChild(draggable1);
+        const placeholder = document.createElement('div');
+        parent1.replaceChild(placeholder, draggable1);
+        parent2.replaceChild(draggable1, draggable2);
+        parent1.replaceChild(draggable2, placeholder);
     }
     setTimeout(() => {
         draggable1.classList.remove('grabbed');
@@ -176,24 +200,31 @@ function swapDraggables(draggable1, draggable2, announce) {
 }
 
 function checkDropzones(announce) {
-    const dz1 = document.getElementById('dz-1').querySelector('.draggable')?.textContent.trim();
-    const dz2 = document.getElementById('dz-2').querySelector('.draggable')?.textContent.trim();
-    const dz3 = document.getElementById('dz-3').querySelector('.draggable')?.textContent.trim();
-    const dz4 = document.getElementById('dz-4').querySelector('.draggable')?.textContent.trim();
+    const dropzoneIds = ['dz-1', 'dz-2', 'dz-3', 'dz-4'];
+    const correctOrder = ['Alaska', 'Rhode Island', 'California', 'Wyoming'];
     const targets = document.getElementById('targets');
+    let allFilled = true;
+    let correct = true;
 
-    if (dz1 && dz2 && dz3 && dz4) {
-        let msg = '';
-        if (dz1 === 'Alaska' && dz2 === 'Rhode Island' && dz3 === 'California' && dz4 === 'Wyoming') {
+    dropzoneIds.forEach((id, index) => {
+        const content = document.getElementById(id).querySelector('.draggable')?.textContent.trim();
+        if (!content) {
+            allFilled = false;
+        } else if (content !== correctOrder[index]) {
+            correct = false;
+        }
+    });
+
+    if (allFilled) {
+        if (correct) {
             targets.classList.add('success');
             targets.classList.remove('error');
-            msg = `All states are in the correct order. Well done!`;    
+            announce(`All states are in the correct order. Well done!`, true);
         } else {
             targets.classList.add('error');
             targets.classList.remove('success');
-            msg = `Not all states are in the correct order. Try again!`;
+            announce(`Not all states are in the correct order. Try again!`, true);
         }
-        announce(msg, true);
     } else {
         targets.classList.remove('success');
         targets.classList.remove('error');
