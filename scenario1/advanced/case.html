@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Bank With Tab Move</title>
+    <link rel="stylesheet" href="case.css">
+    <script src="case.js" defer></script>
+</head>
+<body>
+    <header>
+        <h1>Basic Scenario: Word Bank With Tab Move</h1>
+    </header>
+    <main>
+        <section aria-labelledby="instructions-heading">
+            <h2 id="instructions-heading">Instructions</h2>
+            <p>Drag the words from the word bank and drop them into the correct missing word spots inside the sentences in the exercise area.</p>
+        </section>
+        <section aria-labelledby="exercise">
+            <h2 id="exercise">Exercise</h2>
+            <p id="targets">
+                The United States is a country made up of 50 individual states. 
+                <span class="dropzone" 
+                      tabindex="0" 
+                      role="region" 
+                      id="dz-1"
+                      aria-labelledby="blank dz-1-label">
+                </span> is the <span id="dz-1-label">biggest state in size</span>, and 
+                <span class="dropzone" 
+                      tabindex="0" 
+                      role="region" 
+                      id="dz-2"
+                      aria-labelledby="blank dz-2-label state">
+                </span> is <span id="dz-2-label">the smallest</span>. 
+                <span class="dropzone" 
+                        tabindex="0" 
+                        role="region" 
+                        id="dz-3"
+                        aria-labelledby="blank dz-3-label">
+                </span> is <span id="dz-3-label">the most populated state</span> while 
+                <span class="dropzone" 
+                        tabindex="0" 
+                        role="region" 
+                        id="dz-4"
+                        aria-labelledby="blank dz-4-label">
+                </span> is <span id="dz-4-label">the least populated</span>.
+            </p>
+            <div id="message"></div>
+        </section>
+        <section id="word-bank">
+            <h2>Word Bank</h2>
+            <ul role="list">
+                <li><button class="draggable" draggable="true" aria-describedby="drag">New York</button></li>
+                <li><button class="draggable" draggable="true" aria-describedby="drag">California</button></li>
+                <li><button class="draggable" draggable="true" aria-describedby="drag">Alaska</button></li>
+                <li><button class="draggable" draggable="true" aria-describedby="drag">Wyoming</button></li>
+                <li><button class="draggable" draggable="true" aria-describedby="drag">Rhode Island</button></li>
+                <li><button class="draggable" draggable="true" aria-describedby="drag">Texas</button></li>
+
+            </ul>
+        </section>
+        <span class="visually-hidden" id="drag">draggable</span>
+        <span class="visually-hidden" id="grab">grabbed</span>
+        <span class="visually-hidden" id="blank">blank</span>
+        <span class="visually-hidden" id="state">state</span>
+    </main>
+</body>
