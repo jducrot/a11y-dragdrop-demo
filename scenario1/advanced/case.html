@@ -1,20 +1,36 @@
+{# 
+Advanced Requirements:
+- Add a menu button to the right of each dropzone.
+- When those buttons are clicked, a menu should appear listing all available states in the word bank.
+- Selecting a state from the menu should fill the dropzone with that state.
+- The menu should be accessible via keyboard navigation.
+- Ensure that the menu closes when a state is selected, when the user clicks outside of it, or when a keyboard escape event occurs.
+- Ensure that the menu is focusable and can be navigated using the arrow keys.
+- Ensure that the menu is announced to screen readers when it opens.
+- Each sentence in the exercise area should be own its own line to help with readability.
+- Ensure that the word bank is a list of buttons that can be dragged and dropped into the dropzones.
+- The dropzone menu should follow the wai-aria design pattern for a menu button and menu.
+- 
+#}
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Word Bank With Tab Move</title>
+    <title>Word Bank With Interactive Dropdown</title>
     <link rel="stylesheet" href="case.css">
     <script src="case.js" defer></script>
 </head>
 <body>
     <header>
-        <h1>Basic Scenario: Word Bank With Tab Move</h1>
+        <h1>Advanced Scenario: Word Bank With Interactive Dropdown</h1>
     </header>
     <main>
         <section aria-labelledby="instructions-heading">
             <h2 id="instructions-heading">Instructions</h2>
-            <p>Drag the words from the word bank and drop them into the correct missing word spots inside the sentences in the exercise area.</p>
+            <p>Mouse users can drag the words from the word bank and drop them into the correct missing word spots inside the sentences in the exercise area. Keyboard users can select each word in the word bank using Enter or Spacebar, then focus the desired target location usin Tab or Shift + Tab, and finally drop the selected state on the target by pressing Enter or Spacebar. Alternatively, both mouse and keyboard users can open a menu next to each dropzone to select which state to place in that dropzone.</p>
         </section>
         <section aria-labelledby="exercise">
             <h2 id="exercise">Exercise</h2>

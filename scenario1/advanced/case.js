@@ -4,6 +4,18 @@ const KEYS = {
     ESC: 'Escape'
 };
 
+// Requirements
+//  - Update instructions
+//  - Same interaction for mouse users as basic
+// - each sentence on its own line
+
+// - MENU WITH EMPTY DZ
+// - All states in WB
+
+// - MENU WITH FILLED DZ
+// - All States in WB
+// - Remove <state in DZ>
+
 document.addEventListener('DOMContentLoaded', () => {
     let selectedElement = null;
     let lastAnnouncement = '';
@@ -230,3 +242,6 @@ function checkDropzones(announce) {
         targets.classList.remove('error');
     }
 }
+
+
+
