@@ -1,17 +1,12 @@
-{# 
-Advanced Requirements:
-- Add a menu button to the right of each dropzone.
-- When those buttons are clicked, a menu should appear listing all available states in the word bank.
+
+{# Requirements:
+- When those buttons are clicked, a panel should appear listing all available states in the word bank in a list format.
+- Each item in the list should be a button that can be selected to fill the dropzone with that state.
+- The panel should close when a state is selected, when the user clicks outside of it, or when a keyboard escape event occurs.
 - Selecting a state from the menu should fill the dropzone with that state.
-- The menu should be accessible via keyboard navigation.
-- Ensure that the menu closes when a state is selected, when the user clicks outside of it, or when a keyboard escape event occurs.
-- Ensure that the menu is focusable and can be navigated using the arrow keys.
-- Ensure that the menu is announced to screen readers when it opens.
 - Each sentence in the exercise area should be own its own line to help with readability.
 - Ensure that the word bank is a list of buttons that can be dragged and dropped into the dropzones.
-- The dropzone menu should follow the wai-aria design pattern for a menu button and menu.
-- 
-#}
+- The dropzone menu should follow the wai-aria design pattern for a disclosure. #}
 
 
 <!DOCTYPE html>
@@ -30,39 +25,72 @@ Advanced Requirements:
     <main>
         <section aria-labelledby="instructions-heading">
             <h2 id="instructions-heading">Instructions</h2>
-            <p>Mouse users can drag the words from the word bank and drop them into the correct missing word spots inside the sentences in the exercise area. Keyboard users can select each word in the word bank using Enter or Spacebar, then focus the desired target location usin Tab or Shift + Tab, and finally drop the selected state on the target by pressing Enter or Spacebar. Alternatively, both mouse and keyboard users can open a menu next to each dropzone to select which state to place in that dropzone.</p>
+            <p>
+                There are three ways one can interact with the elements in this exercise:
+                <ol>
+                    <li>
+                        Mouse users can drag the words from the word bank and drop them into the correct missing word spots inside the sentences in the exercise area.
+                    </li>
+                    <li>
+                        Keyboard users can select each word in the word bank using Enter or Spacebar, then focus the desired target location usin Tab or Shift + Tab, and finally drop the selected state on the target by pressing Enter or Spacebar.
+                    </li>
+                    <li>
+                        Lastly, both mouse and keyboard users can open a menu next to each dropzone to select which state to place in that dropzone.
+                    </li>
+                </ol>  
+            </p>
         </section>
+
         <section aria-labelledby="exercise">
             <h2 id="exercise">Exercise</h2>
-            <p id="targets">
-                The United States is a country made up of 50 individual states. 
-                <span class="dropzone" 
-                      tabindex="0" 
-                      role="region" 
-                      id="dz-1"
-                      aria-labelledby="blank dz-1-label">
-                </span> is the <span id="dz-1-label">biggest state in size</span>, and 
-                <span class="dropzone" 
-                      tabindex="0" 
-                      role="region" 
-                      id="dz-2"
-                      aria-labelledby="blank dz-2-label state">
-                </span> is <span id="dz-2-label">the smallest</span>. 
-                <span class="dropzone" 
-                        tabindex="0" 
-                        role="region" 
-                        id="dz-3"
-                        aria-labelledby="blank dz-3-label">
-                </span> is <span id="dz-3-label">the most populated state</span> while 
-                <span class="dropzone" 
-                        tabindex="0" 
-                        role="region" 
-                        id="dz-4"
-                        aria-labelledby="blank dz-4-label">
-                </span> is <span id="dz-4-label">the least populated</span>.
-            </p>
+            <div id="targets">
+                The United States is a country made up of 50 individual states.
+                <div>
+                    <span class="dropzone" 
+                          role="region" 
+                          id="dz-1" 
+                          tabindex="0"
+                          aria-labelledby="blank dz-1-label state"></span> 
+                    <button aria-expanded="false"
+                            aria-labelledby="dz-1-btn dz-1-label state" 
+                            id="dz-1-btn">pick</button> is 
+                    <span id="dz-1-label">the largest</span> 
+                    and 
+                    <span class="dropzone" 
+                          role="region" 
+                          id="dz-2" 
+                          tabindex="0"
+                          aria-labelledby="blank dz-2-label state"></span> 
+                    <button aria-expanded="false"
+                            aria-labelledby="dz-2-btn dz-2-label state"
+                            id="dz-2-btn">pick</button> is 
+                    <span id="dz-2-label">the smallest</span>.
+                </div>
+                <div>
+                    <span class="dropzone" 
+                          role="region" 
+                          id="dz-3" 
+                          tabindex="0"
+                          aria-labelledby="blank dz-3-label state"></span> 
+                    <button aria-expanded="false"
+                            aria-labelledby="dz-3-btn dz-3-label state"
+                            id="dz-4-btn">pick</button> is 
+                    <span id="dz-3-label">the most populated</span> 
+                    while 
+                    <span class="dropzone" 
+                          role="region" 
+                          id="dz-4" 
+                          tabindex="0"
+                          aria-labelledby="blank dz-4-label state"></span> 
+                    <button aria-expanded="false"
+                            aria-labelledby="dz-4-btn dz-4-label state"
+                            id="dz-4-btn">pick</button> is 
+                    <span id="dz-4-label">the least populated</span>.
+                </div>
+            </div>
             <div id="message"></div>
         </section>
+
         <section id="word-bank">
             <h2>Word Bank</h2>
             <ul role="list">
@@ -72,7 +100,6 @@ Advanced Requirements:
                 <li><button class="draggable" draggable="true" aria-describedby="drag">Wyoming</button></li>
                 <li><button class="draggable" draggable="true" aria-describedby="drag">Rhode Island</button></li>
                 <li><button class="draggable" draggable="true" aria-describedby="drag">Texas</button></li>
-
             </ul>
         </section>
         <span class="visually-hidden" id="drag">draggable</span>

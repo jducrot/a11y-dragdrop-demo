@@ -5,13 +5,8 @@ const KEYS = {
 };
 
 // Requirements
-//  - Update instructions
-//  - Same interaction for mouse users as basic
-// - each sentence on its own line
-
 // - MENU WITH EMPTY DZ
 // - All states in WB
-
 // - MENU WITH FILLED DZ
 // - All States in WB
 // - Remove <state in DZ>

@@ -83,13 +83,13 @@ ul li {
     cursor: grabbing;
 }
 
-.draggable:focus-visible {
+:focus-visible {
     outline: var(--borderWidth) solid var(--focusOutlineColor);
     outline-offset: var(--focusOutlineOffset);
     box-shadow: 0 0 0 var(--borderWidth) var(--whiteColor);
 }
 
-.draggable:focus:not(:focus-visible) {
+:focus:not(:focus-visible) {
     outline: none;
 }
 
