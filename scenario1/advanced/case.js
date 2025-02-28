@@ -4,6 +4,10 @@ const KEYS = {
     ESC: 'Escape'
 };
 
+// Global state to track available words and placed words
+let availableWords = [];
+let placedWords = {};
+
 // Requirements
 // - MENU WITH EMPTY DZ
 // - All states in WB
@@ -11,12 +15,40 @@ const KEYS = {
 // - All States in WB
 // - Remove <state in DZ>
 
+// Move the announce function outside the DOMContentLoaded event handler
+// to make it globally available (replace the existing announce function)
+let lastAnnouncement = '';
+let debounceTimeout;
+
+function announce(message, showMessage = false) {
+    if (message === lastAnnouncement) {
+        clearTimeout(debounceTimeout);
+    }
+    lastAnnouncement = message;
+    debounceTimeout = setTimeout(() => {
+        const liveRegion = document.getElementById('a11y-live-region');
+        const messageDiv = document.getElementById('message');
+        if (liveRegion) {
+            liveRegion.textContent = message;
+        }
+        if (messageDiv && showMessage) {
+            messageDiv.textContent = message;
+        }
+    }, 200);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     let selectedElement = null;
-    let lastAnnouncement = '';
-    let debounceTimeout;
-
+    
     setUpLiveRegion();
+
+    // Initialize available words from word bank
+    document.querySelectorAll('#word-bank .draggable').forEach(word => {
+        availableWords.push(word.textContent);
+    });
+
+    // Set up dropdown functionality for each pick button
+    setupDropdownMenus();
 
     const draggables = document.querySelectorAll('.draggable');
     const dropzones = document.querySelectorAll('.dropzone');
@@ -150,23 +182,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-
-    function announce(message, showMessage = false) {
-        if (message === lastAnnouncement) {
-            clearTimeout(debounceTimeout);
-        }
-        lastAnnouncement = message;
-        debounceTimeout = setTimeout(() => {
-            const liveRegion = document.getElementById('a11y-live-region');
-            const messageDiv = document.getElementById('message');
-            if (liveRegion) {
-                liveRegion.textContent = message;
-            }
-            if (messageDiv && showMessage) {
-                messageDiv.textContent = message;
-            }
-        }, 200);
-    }
 });
 
 function handleDragStart(selectedElement, draggable, announce) {
@@ -236,6 +251,302 @@ function checkDropzones(announce) {
         targets.classList.remove('success');
         targets.classList.remove('error');
     }
+}
+
+function setupDropdownMenus() {
+    const pickButtons = document.querySelectorAll('[aria-expanded]');
+    
+    pickButtons.forEach(button => {
+        // Create dropdown menu for each button
+        const dropzoneId = button.id.replace('-btn', '');
+        const menu = createDropdownMenu(dropzoneId);
+        document.body.appendChild(menu);
+        
+        // Add event listeners
+        button.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleDropdownMenu(button, menu);
+        });
+        
+        button.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown') {
+                e.preventDefault();
+                showDropdownMenu(button, menu);
+                // Focus the first item
+                const firstItem = menu.querySelector('li button');
+                if (firstItem) firstItem.focus();
+            }
+        });
+        
+        // Close when clicking outside
+        document.addEventListener('click', () => {
+            hideAllDropdownMenus();
+        });
+    });
+}
+
+function createDropdownMenu(dropzoneId) {
+    const menu = document.createElement('div');
+    menu.id = `menu-${dropzoneId}`;
+    menu.className = 'dropdown-menu';
+    menu.setAttribute('role', 'menu');
+    menu.setAttribute('aria-labelledby', `${dropzoneId}-btn`);
+    menu.setAttribute('hidden', 'true');
+    
+    // Create menu container
+    const menuList = document.createElement('ul');
+    menuList.setAttribute('role', 'none');
+    menu.appendChild(menuList);
+    
+    populateDropdownMenu(menu);
+    setupMenuKeyboardNavigation(menu);
+    
+    return menu;
+}
+
+function populateDropdownMenu(menu) {
+    const menuList = menu.querySelector('ul');
+    menuList.innerHTML = '';
+    
+    // Create menu items for available words
+    availableWords.forEach(word => {
+        const listItem = document.createElement('li');
+        listItem.setAttribute('role', 'none');
+        
+        const button = document.createElement('button');
+        button.textContent = word;
+        button.setAttribute('role', 'menuitem');
+        button.setAttribute('tabindex', '-1');
+        
+        button.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const dropzoneId = menu.id.replace('menu-', '');
+            placeWordInDropzone(word, dropzoneId);
+            hideAllDropdownMenus();
+        });
+        
+        listItem.appendChild(button);
+        menuList.appendChild(listItem);
+    });
+    
+    // Add a "Clear" option if dropzone has a word
+    const dropzoneId = menu.id.replace('menu-', '');
+    if (placedWords[dropzoneId]) {
+        const listItem = document.createElement('li');
+        listItem.setAttribute('role', 'none');
+        
+        const button = document.createElement('button');
+        // Improve the text to be more descriptive
+        const stateInDropzone = placedWords[dropzoneId];
+        button.textContent = `Remove ${stateInDropzone}`;
+        button.setAttribute('role', 'menuitem');
+        button.setAttribute('tabindex', '-1');
+        // Add aria-label for improved screen reader context
+        button.setAttribute('aria-label', `Remove ${stateInDropzone} and return it to word bank`);
+        
+        button.addEventListener('click', (e) => {
+            e.stopPropagation();
+            removeWordFromDropzone(dropzoneId);
+            hideAllDropdownMenus();
+        });
+        
+        listItem.appendChild(button);
+        menuList.appendChild(listItem);
+    }
+}
+
+function placeWordInDropzone(word, dropzoneId) {
+    const dropzone = document.getElementById(dropzoneId);
+    
+    // Find the matching draggable element in the word bank
+    const wordBankItem = findWordInWordBank(word);
+    
+    if (!wordBankItem) {
+        announce(`Could not find ${word} in the word bank`);
+        return;
+    }
+    
+    // If there's already a word in the dropzone, move it back to word bank
+    if (dropzone.firstChild) {
+        moveChildToWordBank(dropzone);
+    }
+    
+    // Move the element from word bank to dropzone
+    dropzone.appendChild(wordBankItem);
+    
+    // Update tracking variables
+    const oldWord = placedWords[dropzoneId];
+    if (oldWord && availableWords.indexOf(oldWord) === -1) {
+        availableWords.push(oldWord);
+    }
+    
+    availableWords = availableWords.filter(w => w !== word);
+    placedWords[dropzoneId] = word;
+    
+    // Update all dropdown menus
+    document.querySelectorAll('.dropdown-menu').forEach(menu => {
+        populateDropdownMenu(menu);
+    });
+    
+    // Announce the change to screen readers
+    announce(`Placed ${word} in the dropzone`);
+    
+    // Check if all dropzones are filled correctly
+    checkDropzones(announce);
+}
+
+function findWordInWordBank(word) {
+    const wordBankButtons = document.querySelectorAll('#word-bank .draggable');
+    
+    for (const button of wordBankButtons) {
+        if (button.textContent.trim() === word) {
+            return button;
+        }
+    }
+    
+    return null;
+}
+
+function removeWordFromDropzone(dropzoneId) {
+    const dropzone = document.getElementById(dropzoneId);
+    
+    if (dropzone.firstChild) {
+        const word = dropzone.firstChild.textContent.trim();
+        
+        // Use the existing moveChildToWordBank function
+        moveChildToWordBank(dropzone);
+        
+        // Update tracking
+        delete placedWords[dropzoneId];
+        availableWords.push(word);
+        
+        // Update all dropdown menus
+        document.querySelectorAll('.dropdown-menu').forEach(menu => {
+            populateDropdownMenu(menu);
+        });
+        
+        // Announce the change to screen readers with improved context
+        announce(`Removed ${word} from the dropzone and returned it to the word bank`);
+    }
+}
+
+function toggleDropdownMenu(button, menu) {
+    if (menu.hasAttribute('hidden')) {
+        showDropdownMenu(button, menu);
+    } else {
+        hideDropdownMenu(button, menu);
+    }
+}
+
+function showDropdownMenu(button, menu) {
+    // Position the menu below the button
+    const buttonRect = button.getBoundingClientRect();
+    menu.style.top = `${buttonRect.bottom + window.scrollY}px`;
+    menu.style.left = `${buttonRect.left + window.scrollX}px`;
+    
+    // Update menu content with current available words
+    populateDropdownMenu(menu);
+    
+    // Show the menu
+    menu.removeAttribute('hidden');
+    button.setAttribute('aria-expanded', 'true');
+}
+
+function hideDropdownMenu(button, menu) {
+    menu.setAttribute('hidden', 'true');
+    button.setAttribute('aria-expanded', 'false');
+    button.focus(); // Return focus to the button
+}
+
+function hideAllDropdownMenus() {
+    document.querySelectorAll('.dropdown-menu').forEach(menu => {
+        const buttonId = menu.getAttribute('aria-labelledby');
+        const button = document.getElementById(buttonId);
+        if (button) {
+            hideDropdownMenu(button, menu);
+        }
+    });
+}
+
+function setupMenuKeyboardNavigation(menu) {
+    menu.addEventListener('keydown', (e) => {
+        const items = Array.from(menu.querySelectorAll('[role="menuitem"]'));
+        const currentIndex = items.indexOf(document.activeElement);
+        
+        switch (e.key) {
+            case 'ArrowDown':
+                e.preventDefault();
+                if (currentIndex < items.length - 1) {
+                    items[currentIndex + 1].focus();
+                }
+                break;
+                
+            case 'ArrowUp':
+                e.preventDefault();
+                if (currentIndex > 0) {
+                    items[currentIndex - 1].focus();
+                } else {
+                    // Return to the button when at the top
+                    const buttonId = menu.getAttribute('aria-labelledby');
+                    const button = document.getElementById(buttonId);
+                    hideDropdownMenu(button, menu);
+                }
+                break;
+                
+            case 'Escape':
+                e.preventDefault();
+                const buttonId = menu.getAttribute('aria-labelledby');
+                const button = document.getElementById(buttonId);
+                hideDropdownMenu(button, menu);
+                break;
+                
+            case 'Enter':
+            case ' ':
+                e.preventDefault();
+                if (document.activeElement.getAttribute('role') === 'menuitem') {
+                    document.activeElement.click();
+                }
+                break;
+                
+            case 'Tab':
+                hideAllDropdownMenus();
+                break;
+        }
+    });
+}
+
+function announceChange(message) {
+    // Use the existing announce function instead
+    announce(message);
+}
+
+// This function should be called when words are dragged and dropped
+function updateAvailableWordsAfterDragDrop(word, fromDropzone, toDropzone) {
+    // Update tracking of words when drag/drop is used
+    if (fromDropzone) {
+        delete placedWords[fromDropzone];
+    } else {
+        // Word is coming from the word bank
+        availableWords = availableWords.filter(w => w !== word);
+    }
+    
+    if (toDropzone) {
+        // If there was already a word in the target dropzone
+        const oldWord = placedWords[toDropzone];
+        if (oldWord) {
+            availableWords.push(oldWord);
+        }
+        
+        placedWords[toDropzone] = word;
+    } else {
+        // Word is going back to word bank
+        availableWords.push(word);
+    }
+    
+    // Update all menus
+    document.querySelectorAll('.dropdown-menu').forEach(menu => {
+        populateDropdownMenu(menu);
+    });
 }
 
 

@@ -1,26 +1,15 @@
-
-{# Requirements:
-- When those buttons are clicked, a panel should appear listing all available states in the word bank in a list format.
-- Each item in the list should be a button that can be selected to fill the dropzone with that state.
-- The panel should close when a state is selected, when the user clicks outside of it, or when a keyboard escape event occurs.
-- Selecting a state from the menu should fill the dropzone with that state.
-- Each sentence in the exercise area should be own its own line to help with readability.
-- Ensure that the word bank is a list of buttons that can be dragged and dropped into the dropzones.
-- The dropzone menu should follow the wai-aria design pattern for a disclosure. #}
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Word Bank With Interactive Dropdown</title>
+    <title>Word Bank With Dropdown</title>
     <link rel="stylesheet" href="case.css">
     <script src="case.js" defer></script>
 </head>
 <body>
     <header>
-        <h1>Advanced Scenario: Word Bank With Interactive Dropdown</h1>
+        <h1>Advanced Scenario: Word Bank With Dropdown</h1>
     </header>
     <main>
         <section aria-labelledby="instructions-heading">
@@ -74,7 +63,7 @@
                           aria-labelledby="blank dz-3-label state"></span> 
                     <button aria-expanded="false"
                             aria-labelledby="dz-3-btn dz-3-label state"
-                            id="dz-4-btn">pick</button> is 
+                            id="dz-3-btn">pick</button> is 
                     <span id="dz-3-label">the most populated</span> 
                     while 
                     <span class="dropzone" 
@@ -108,3 +97,4 @@
         <span class="visually-hidden" id="state">state</span>
     </main>
 </body>
+</html>
