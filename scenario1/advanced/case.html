@@ -13,68 +13,83 @@
     </header>
     <main>
         <section aria-labelledby="instructions-heading">
-            <h2 id="instructions-heading">Instructions</h2>
-            <p>There are three ways one can interact with the elements in this exercise:</p>
-            <ol>
-                <li>Mouse users can drag the words from the word bank and drop them into the correct missing word spots inside the sentences in the exercise area.</li>
-                <li>Keyboard users can select each word in the word bank using Enter or Spacebar, then focus the desired target location using Tab or Shift + Tab, and finally drop the selected state on the target by pressing Enter or Spacebar.</li>
-                <li>Both mouse and keyboard users can open a menu next to each dropzone to select which state to place in that dropzone.</li>
-            </ol>
+            <h2 id="instructions-heading">
+                <button 
+                  aria-expanded="false" 
+                  aria-controls="instructions-panel" 
+                  id="instructions-button">View Instructions</button>
+            </h2>
+            <div id="instructions-panel" hidden>
+                <p>There are three ways one can interact with the elements in this exercise:</p>
+                <ol>
+                    <li>Mouse users can drag states from the word bank and drop them onto the correct sentences.</li>
+                    <li>Keyboard users can use a menu next to each dropzone to select which state to place in that sentence.</li>
+                </ol>
+                <p>
+                    Note: The menu only becomes visible when it receives keyboard focus. It you would rather the menu buttons remain visible at all time, please toggle the "Show Menu Buttons" checkbox below.
+                    <div>
+                        <label for="menu-btn-visiblity">Show Menu Buttons</label>
+                        <input type="checkbox" id="menu-btn-visiblity">
+                    </div>
+                </p>
+            </div>
         </section>
 
         <section aria-labelledby="exercise">
             <h2 id="exercise">Exercise</h2>
             <div id="targets">
                 <p>The United States is a country made up of 50 individual states.</p>
-                
-                <div class="exercise-item">
-                    <div class="dropzone-container">
-                        <div class="dropzone" 
-                             id="dz-1" 
-                             tabindex="0"
-                             aria-label="Blank for the largest state"></div> 
-                        <button class="dropdown-trigger"
-                                aria-expanded="false"
-                                aria-label="Select state for the largest state position" 
-                                id="dz-1-btn">pick</button>
-                    </div>
-                    <span> is the largest and </span>
-                    <div class="dropzone-container">
-                        <div class="dropzone" 
-                             id="dz-2" 
-                             tabindex="0"
-                             aria-label="Blank for the smallest state"></div> 
-                        <button class="dropdown-trigger"
-                                aria-expanded="false"
-                                aria-label="Select state for the smallest state position"
-                                id="dz-2-btn">pick</button>
-                    </div>
-                    <span> is the smallest.</span>
-                </div>
+                <div id="exercise-feedback">
 
-                <div class="exercise-item">
-                    <div class="dropzone-container">
-                        <div class="dropzone" 
-                             id="dz-3" 
-                             tabindex="0"
-                             aria-label="Blank for the most populated state"></div> 
-                        <button class="dropdown-trigger"
-                                aria-expanded="false"
-                                aria-label="Select state for the most populated state position"
-                                id="dz-3-btn">pick</button>
+                    <div class="exercise-item">
+                        <div class="dropzone-container">
+                            <div class="dropzone" 
+                                id="dz-1" 
+                                tabindex="0"
+                                aria-label="Blank for the largest state"></div> 
+                            <button class="dropdown-trigger"
+                                    aria-expanded="false"
+                                    aria-label="Select the largest state" 
+                                    id="dz-1-btn">pick</button>
+                        </div>
+                        <span> is the largest and </span>
+                        <div class="dropzone-container">
+                            <div class="dropzone" 
+                                id="dz-2" 
+                                tabindex="0"
+                                aria-label="Blank for the smallest state"></div> 
+                            <button class="dropdown-trigger"
+                                    aria-expanded="false"
+                                    aria-label="Select the smallest state"
+                                    id="dz-2-btn">pick</button>
+                        </div>
+                        <span> is the smallest.</span>
                     </div>
-                    <span> is the most populated while </span>
-                    <div class="dropzone-container">
-                        <div class="dropzone" 
-                             id="dz-4" 
-                             tabindex="0"
-                             aria-label="Blank for the least populated state"></div> 
-                        <button class="dropdown-trigger"
-                                aria-expanded="false"
-                                aria-label="Select state for the least populated state position"
-                                id="dz-4-btn">pick</button>
+
+                    <div class="exercise-item">
+                        <div class="dropzone-container">
+                            <div class="dropzone" 
+                                id="dz-3" 
+                                tabindex="0"
+                                aria-label="Blank for the most populated state"></div> 
+                            <button class="dropdown-trigger"
+                                    aria-expanded="false"
+                                    aria-label="Select the most populated state"
+                                    id="dz-3-btn">pick</button>
+                        </div>
+                        <span> is the most populated while </span>
+                        <div class="dropzone-container">
+                            <div class="dropzone" 
+                                id="dz-4" 
+                                tabindex="0"
+                                aria-label="Blank for the least populated state"></div> 
+                            <button class="dropdown-trigger"
+                                    aria-expanded="false"
+                                    aria-label="Select the least populated state"
+                                    id="dz-4-btn">pick</button>
+                        </div>
+                        <span> is the least populated.</span>
                     </div>
-                    <span> is the least populated.</span>
                 </div>
             </div>
             <div id="message" aria-live="polite"></div>
@@ -83,19 +98,17 @@
         <section id="word-bank">
             <h2>Word Bank</h2>
             <ul>
-                <li><button class="draggable" draggable="true" aria-describedby="drag">New York</button></li>
-                <li><button class="draggable" draggable="true" aria-describedby="drag">California</button></li>
-                <li><button class="draggable" draggable="true" aria-describedby="drag">Alaska</button></li>
-                <li><button class="draggable" draggable="true" aria-describedby="drag">Wyoming</button></li>
-                <li><button class="draggable" draggable="true" aria-describedby="drag">Rhode Island</button></li>
-                <li><button class="draggable" draggable="true" aria-describedby="drag">Texas</button></li>
+                <li><div class="draggable" draggable="true">New York</div></li>
+                <li><div class="draggable" draggable="true">California</div></li>
+                <li><div class="draggable" draggable="true">Alaska</div></li>
+                <li><div class="draggable" draggable="true">Wyoming</div></li>
+                <li><div class="draggable" draggable="true">Rhode Island</div></li>
+                <li><div class="draggable" draggable="true">Texas</div></li>
             </ul>
         </section>
 
         <!-- Hidden text for screen readers -->
         <div class="visually-hidden">
-            <span id="drag">draggable</span>
-            <span id="grab">grabbed</span>
             <span id="blank">blank</span>
             <span id="state">state</span>
         </div>

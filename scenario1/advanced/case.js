@@ -1,9 +1,3 @@
-/**
- * Accessible Drag and Drop with Menu Alternative
- * WCAG 2.2 Level AA Compliant Implementation
- */
-
-// Constants and State Management
 const KEYS = { ENTER: 'Enter', SPACE: ' ', ESC: 'Escape' };
 const STATE = {
   selectedElement: null,
@@ -40,10 +34,7 @@ const utils = {
 // ===== Accessibility Functions =====
 const accessibility = {
   debounceTimeout: null,
-  
-  /**
-   * Set up live region for screen reader announcements
-   */
+
   setUpLiveRegion() {
     const liveRegion = document.createElement('div');
     liveRegion.id = 'a11y-live-region';
@@ -88,7 +79,6 @@ const dragDrop = {
     const dropzones = document.querySelectorAll('.dropzone');
     
     draggables.forEach(draggable => {
-      draggable.addEventListener('keydown', this.handleDraggableKeydown);
       draggable.addEventListener('dragstart', this.handleDragStart);
       draggable.addEventListener('dragend', this.handleDragEnd);
       draggable.addEventListener('click', this.handleDragStart);
@@ -103,51 +93,11 @@ const dragDrop = {
   },
   
   /**
-   * Handle keydown events on draggable elements
-   * @param {KeyboardEvent} event 
-   */
-  handleDraggableKeydown(event) {
-    event.stopPropagation();
-    const { key, currentTarget } = event;
-    
-    if (key === KEYS.ENTER || key === KEYS.SPACE) {
-      event.preventDefault();
-      
-      if (STATE.selectedElement && currentTarget !== STATE.selectedElement) {
-        // Swap elements if one is already selected
-        dragDrop.swapElements(STATE.selectedElement, currentTarget);
-        STATE.selectedElement = null;
-      } else {
-        // Start drag operation
-        STATE.selectedElement = currentTarget;
-        currentTarget.setAttribute('aria-describedby', 'drag grab');
-        currentTarget.classList.add('grabbed');
-        accessibility.announce(`${utils.getItemName(currentTarget)} grabbed`);
-      }
-      
-      validation.checkDropzones();
-    } else if (key === KEYS.ESC) {
-      event.preventDefault();
-      
-      if (STATE.selectedElement) {
-        const itemName = utils.getItemName(STATE.selectedElement);
-        STATE.selectedElement.setAttribute('aria-describedby', 'drag');
-        STATE.selectedElement.classList.remove('grabbed');
-        STATE.selectedElement = null;
-        accessibility.announce(`${itemName} selection canceled`);
-      }
-    }
-  },
-  
-  /**
    * Handle dragstart events
    * @param {DragEvent} event 
    */
   handleDragStart(event) {
     STATE.selectedElement = event.currentTarget;
-    event.currentTarget.setAttribute('aria-describedby', 'drag grab');
-    event.currentTarget.classList.add('grabbed');
-    accessibility.announce(`${utils.getItemName(event.currentTarget)} grabbed`);
     utils.removeEmptyListItems();
   },
   
@@ -157,11 +107,8 @@ const dragDrop = {
    */
   handleDragEnd(event) {
     const itemName = utils.getItemName(event.currentTarget);
-    event.currentTarget.setAttribute('aria-describedby', 'drag');
-    event.currentTarget.classList.remove('grabbed');
     STATE.selectedElement = null;
     utils.removeEmptyListItems();
-    accessibility.announce(`${itemName} dropped`);
     validation.checkDropzones();
   },
   
@@ -194,9 +141,6 @@ const dragDrop = {
       dragDrop.swapElements(STATE.selectedElement, existingDraggable);
     } else {
       dropzone.appendChild(STATE.selectedElement);
-      STATE.selectedElement.setAttribute('aria-describedby', 'drag');
-      STATE.selectedElement.classList.remove('grabbed');
-      accessibility.announce(`${utils.getItemName(STATE.selectedElement)} dropped`);
     }
     
     // Update tracking
@@ -222,12 +166,8 @@ const dragDrop = {
     }
     
     dropzone.appendChild(STATE.selectedElement);
-    
-    STATE.selectedElement.setAttribute('aria-describedby', 'drag');
-    STATE.selectedElement.classList.remove('grabbed');
     STATE.selectedElement = null;
     utils.removeEmptyListItems();
-    accessibility.announce(`${itemName} dropped`);
     
     // Update state tracking
     stateManager.updateAfterDragDrop(itemName, null, dropzone.id);
@@ -251,7 +191,6 @@ const dragDrop = {
       const listItem = document.createElement('li');
       listItem.appendChild(draggable);
       wordBank.appendChild(listItem);
-      draggable.setAttribute('aria-describedby', 'drag');
     }
     
     // Update state tracking
@@ -278,18 +217,22 @@ const dragDrop = {
     
     // Update state tracking
     if (parent1.classList.contains('dropzone') && parent2.classList.contains('dropzone')) {
+
       stateManager.swapDropzoneItems(parent1.id, parent2.id);
+
     } else if (parent1.classList.contains('dropzone')) {
+
       delete STATE.placedWords[parent1.id];
       STATE.placedWords[parent2.id] = utils.getItemName(draggable1);
+
     } else if (parent2.classList.contains('dropzone')) {
+
       delete STATE.placedWords[parent2.id];
       STATE.placedWords[parent1.id] = utils.getItemName(draggable2);
+
     }
     
     setTimeout(() => {
-      draggable1.classList.remove('grabbed');
-      draggable2.classList.remove('grabbed');
       draggable1.focus();
       accessibility.announce(`Swapped ${utils.getItemName(draggable1)} and ${utils.getItemName(draggable2)}`);
     }, 100);
@@ -302,11 +245,13 @@ const dropdownMenu = {
    * Initialize dropdown menus
    */
   init() {
-    const pickButtons = document.querySelectorAll('[aria-expanded]');
+    // Change this line to be more specific
+    const pickButtons = document.querySelectorAll('.dropdown-trigger[aria-expanded]');
     
     pickButtons.forEach(button => {
       const dropzoneId = button.id.replace('-btn', '');
       const menu = this.createMenu(dropzoneId);
+
       document.body.appendChild(menu);
       
       // Add event listeners
@@ -382,8 +327,8 @@ const dropdownMenu = {
         () => {
           dragDrop.moveToWordBank(document.getElementById(dropzoneId));
           this.hideAllMenus();
-        },
-        `Remove ${word} and return it to word bank`
+          validation.checkDropzones();
+        }
       );
     }
   },
@@ -442,12 +387,7 @@ const dropdownMenu = {
   placeWordInDropzone(word, dropzoneId) {
     const dropzone = document.getElementById(dropzoneId);
     const wordBankItem = this.findWordInWordBank(word);
-    
-    if (!wordBankItem) {
-      accessibility.announce(`Could not find ${word} in the word bank`);
-      return;
-    }
-    
+
     // If there's already a word in the dropzone, move it back to word bank
     if (dropzone.firstChild) {
       dragDrop.moveToWordBank(dropzone);
@@ -455,12 +395,7 @@ const dropdownMenu = {
     
     // Move the element from word bank to dropzone
     dropzone.appendChild(wordBankItem);
-    
-    // Update tracking
     STATE.placedWords[dropzoneId] = word;
-    
-    // Announce the change
-    accessibility.announce(`Placed ${word} in the dropzone`);
     
     // Check if all dropzones are filled correctly
     validation.checkDropzones();
@@ -684,7 +619,7 @@ const validation = {
   checkDropzones() {
     const dropzoneIds = ['dz-1', 'dz-2', 'dz-3', 'dz-4'];
     const correctOrder = ['Alaska', 'Rhode Island', 'California', 'Wyoming'];
-    const targets = document.getElementById('targets');
+    const targets = document.getElementById('exercise-feedback');
     let allFilled = true;
     let correct = true;
     
@@ -719,6 +654,40 @@ document.addEventListener('DOMContentLoaded', () => {
   accessibility.setUpLiveRegion();
   dragDrop.init();
   dropdownMenu.init();
+  const instructionsButton = document.getElementById('instructions-button');
+  const instructionsPanel = document.getElementById('instructions-panel');
+  
+  if (instructionsButton && instructionsPanel) {
+    instructionsButton.addEventListener('click', () => {
+      // Get current state
+      const isExpanded = instructionsButton.getAttribute('aria-expanded') === 'true';
+      
+      // Toggle the expanded state
+      instructionsButton.setAttribute('aria-expanded', !isExpanded);
+      
+      // Toggle panel visibility
+      instructionsPanel.hidden = isExpanded;
+    });
+  }
+
+  // Get the visibility checkbox
+  const visibilityCheckbox = document.getElementById('menu-btn-visiblity');
+  
+  if (visibilityCheckbox) {
+    // Set initial state based on checkbox
+    if (visibilityCheckbox.checked) {
+      document.body.classList.add('show-dropdown-triggers');
+    }
+    
+    // Add event listener for changes
+    visibilityCheckbox.addEventListener('change', () => {
+      if (visibilityCheckbox.checked) {
+        document.body.classList.add('show-dropdown-triggers');
+      } else {
+        document.body.classList.remove('show-dropdown-triggers');
+      }
+    });
+  }
 });
 
 

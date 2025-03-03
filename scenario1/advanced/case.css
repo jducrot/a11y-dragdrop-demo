@@ -1,46 +1,50 @@
 /* ===== VARIABLES ===== */
 :root {
+    /* Colors */
+    --color-primary: #0066cc;
+    --color-primary-light: #3a87ff;
+    --color-border: black;
+    --color-background: #ffffff;
+    --color-background-light: #f0f0f0;
+    --color-background-hover: #e0e0e0;
+    --color-background-selected: #ddeeff;
+    --color-shadow: rgba(0,0,0,0.2);
+    --color-success: #2de858;
+    --color-error: #ee717c;
+    
+    /* Interactive elements */
+    --element-border-width: 2px;
+    --element-border-radius: 4px;
+    --element-padding: 8px 12px;
+    --element-margin: 5px 0;
+    
     /* Focus styles */
-    --focusOutlineColor: #3a87ff;
-    --focusOutlineWidth: 2px;
-    --focusOutlineOffset: 3px;
+    --focus-outline-color: var(--color-primary-light);
+    --focus-outline-width: 2px;
+    --focus-outline-offset: 3px;
     
     /* Typography */
-    --baseFontSize: 16px;
+    --font-family: sans-serif;
+    --font-size-base: 16px;
+    --line-height-base: 1.5;
     
-    /* Layout & sizing */
-    --borderWidth: 2px;
-    --dragHeight: 30px;
-    --dropWidth: 100px;
-    
-    /* Colors - interactive elements */
-    --borderColor: black;
-    --draggableBackgroundColor: lightgray;
-    --draggableBorderColor: black;
-    --draggableHoverBorderColor: #0066cc;
-    --draggableSelectedBackgroundColor: #ddeeff;
-    --draggableSelectedBorderColor: #0066cc;
-    
-    /* Colors - dropzones */
-    --dropzoneBackgroundColor: #ffffff;
-    --dropzoneDropeffectBackgroundColor: lightgray;
-    --dropzoneDropeffectBorderColor: darkgray;
-    
-    /* Status colors */
-    --successColor: #2de858;
-    --errorColor: #ee717c;
-    --visuallyHiddenBackgroundColor: black;
+    /* Layout */
+    --spacing-small: 5px;
+    --spacing-medium: 8px;
+    --spacing-large: 40px;
+    --drag-height: 30px;
+    --drop-min-width: 100px;
 }
 
 /* ===== BASE STYLES ===== */
 body {
-    font-family: sans-serif;
-    font-size: var(--baseFontSize);
-    line-height: 1.5;
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-base);
 }
 
 section {
-    margin-bottom: 40px;
+    margin-bottom: var(--spacing-large);
 }
 
 #targets {
@@ -61,8 +65,8 @@ section {
 
 /* Enhanced focus styles for keyboard navigation */
 :focus-visible {
-    outline: var(--focusOutlineWidth) solid var(--focusOutlineColor);
-    outline-offset: var(--focusOutlineOffset);
+    outline: var(--focus-outline-width) solid var(--focus-outline-color);
+    outline-offset: var(--focus-outline-offset);
     box-shadow: 0 0 0 1px white; /* Ensures visibility against different backgrounds */
 }
 
@@ -73,40 +77,52 @@ section {
 
 /* ===== DROPZONE ELEMENTS ===== */
 .dropzone {
-    display: inline-flex;  /* Change from inline-block to inline-flex */
-    align-items: center;  /* Center content vertically */
-    justify-content: center; /* Center content horizontally */
-    border: var(--borderWidth) solid var(--borderColor);
-    margin: 0 5px;
-    background-color: var(--dropzoneBackgroundColor);
-    min-width: 100px;
-    min-height: var(--dragHeight);
-    height: var(--dragHeight); /* Set explicit height to prevent shifting */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: var(--element-border-width) solid var(--color-border);
+    margin: 0 var(--spacing-small);
+    background-color: var(--color-background);
+    min-width: var(--drop-min-width);
+    min-height: var(--drag-height);
+    height: var(--drag-height);
     width: max-content;
-    vertical-align: middle; /* Keep this for alignment with surrounding text */
+    vertical-align: middle;
 }
 
 .dropzone[aria-dropeffect="move"] {
-    background-color: var(--dropzoneDropeffectBackgroundColor);
-    border: var(--borderWidth) dashed var(--dropzoneDropeffectBorderColor);
+    background-color: var(--color-background-light);
+    border: var(--element-border-width) dashed var(--color-border);
+}
+
+/* Remove padding on dropzone when it contains an element */
+.dropzone:not(:empty) {
+  padding: 0;
+  border-color: transparent;
+  background-color: transparent;
+}
+
+/* Ensure dropzone is visible when empty */
+.dropzone:empty {
+  background-color: var(--color-background-light);
+  border-style: dashed;
+  border-color: var(--color-border);
 }
 
 /* ===== DRAGGABLE ELEMENTS ===== */
 .draggable {
-    font-size: var(--baseFontSize);
-    border: var(--borderWidth) solid var(--draggableBorderColor);
-    min-height: calc(var(--dragHeight) - (2 * var(--borderWidth))); /* Account for borders */
-    min-width: var(--dragHeight);
-    padding: 0 5px;
-    border-radius: 5px;
-    background-color: var(--draggableBackgroundColor);
-    color: var(--borderColor);
-    margin: 0; /* Reset margins */
-    box-sizing: border-box; /* Include padding and border in element's dimensions */
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
     cursor: grab;
+    padding: var(--element-padding);
+    background-color: var(--color-background-light);
+    border: 1px solid #ccc;
+    border-radius: var(--element-border-radius);
+    display: inline-block;
+    margin: var(--element-margin);
+    user-select: none;
+}
+
+.draggable:hover {
+    background-color: var(--color-background-hover);
 }
 
 .draggable:active {
@@ -114,17 +130,16 @@ section {
 }
 
 .draggable.grabbed {
-    background-color: var(--draggableSelectedBackgroundColor);
-    border: var(--borderWidth) solid var(--draggableSelectedBorderColor);
-    border-width: calc(var(--borderWidth) * 2);
+    background-color: var(--color-background-selected);
+    border: var(--element-border-width) solid var(--color-primary);
 }
 
 /* ===== DROPDOWN MENU ===== */
 .dropdown-menu {
     position: absolute;
-    background-color: white;
+    background-color: var(--color-background);
     border: 1px solid #ccc;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 5px var(--color-shadow);
     z-index: 100;
     min-width: 150px;
     margin-top: 2px;
@@ -144,7 +159,7 @@ section {
 
 .dropdown-menu button {
     width: 100%;
-    padding: 8px 12px;
+    padding: var(--element-padding);
     text-align: left;
     border: none;
     background: none;
@@ -153,7 +168,7 @@ section {
 
 .dropdown-menu button:hover,
 .dropdown-menu button:focus {
-    background-color: #f0f0f0;
+    background-color: var(--color-background-light);
 }
 
 /* Make dropdown trigger buttons visually hidden by default */
@@ -169,32 +184,25 @@ section {
     border-width: 0;
 }
 
-/* Show the button when it receives focus */
-.dropdown-trigger:focus-visible {
+/* Consolidated visible states for dropdown triggers */
+.dropdown-trigger:focus-visible,
+.dropdown-trigger[aria-expanded="true"],
+.show-dropdown-triggers .dropdown-trigger {
     position: static;
     width: auto;
     height: auto;
-    padding: 4px 8px;
-    margin: 0 0 0 5px;
+    padding: 4px var(--spacing-medium);
+    margin: 0 0 0 var(--spacing-small);
     overflow: visible;
     clip: auto;
     white-space: normal;
-    border: 1px solid var(--borderColor);
-    outline: var(--focusOutlineWidth) solid var(--focusOutlineColor);
-    outline-offset: var(--focusOutlineOffset);
+    border: 1px solid var(--color-border);
 }
 
-/* Also show the button when its associated menu is open */
-.dropdown-trigger[aria-expanded="true"] {
-    position: static;
-    width: auto;
-    height: auto;
-    padding: 4px 8px;
-    margin: 0 0 0 5px;
-    overflow: visible;
-    clip: auto;
-    white-space: normal;
-    border: 1px solid var(--borderColor);
+/* Add focus outline only for keyboard focus */
+.dropdown-trigger:focus-visible {
+    outline: var(--focus-outline-width) solid var(--focus-outline-color);
+    outline-offset: var(--focus-outline-offset);
 }
 
 /* ===== LISTS ===== */
@@ -206,16 +214,16 @@ ul {
 
 ul li {
     display: inline;
-    margin-right: 8px;
+    margin-right: var(--spacing-medium);
 }
 
 /* ===== STATE INDICATORS ===== */
 .success {
-    background-color: var(--successColor);
+    background-color: var(--color-success);
 }
 
 .error {
-    background-color: var(--errorColor);
+    background-color: var(--color-error);
 }
 
 .invisible {
@@ -235,11 +243,62 @@ ul li {
     display: inline-flex;
     align-items: center;
     position: relative;
-    gap: 5px;
+    gap: var(--spacing-small);
     vertical-align: middle;
 }
 
 .exercise-item {
-  margin-bottom: 1em;
-  line-height: 2;
+    margin-bottom: 1em;
+    line-height: 2;
+}
+
+/* Common styling for both draggable and dropzone */
+.draggable, .dropzone {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--drag-height);
+    height: var(--drag-height);
+    min-width: var(--drop-min-width);
+    width: max-content;
+    padding: 5px 10px;
+    border: 2px solid var(--color-border);
+    border-radius: 4px;
+    background-color: var(--color-background);
+    vertical-align: middle;
+    box-sizing: border-box;
+}
+
+/* Specific styles for draggable elements */
+.draggable {
+    cursor: grab;
+    user-select: none;
+    margin: var(--spacing-small) 0;
+}
+
+.draggable:active {
+    cursor: grabbing;
+}
+
+/* Empty dropzone style */
+.dropzone:empty {
+    background-color: var(--color-background-light);
+    border-style: dashed;
+}
+
+/* Active drag styles */
+.dropzone[aria-dropeffect="move"] {
+    background-color: var(--color-background-light);
+    border: 2px dashed var(--color-border);
+}
+
+.draggable.grabbed {
+    background-color: var(--color-background-selected);
+    border: 2px solid var(--color-primary);
+}
+
+/* Collapse exercise-feedback to fit content width */
+#exercise-feedback {
+  width: fit-content;
+  max-width: 100%; /* Ensures no overflow on small screens */
 }
